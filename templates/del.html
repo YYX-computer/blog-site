@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<script>
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+function request(method,path,data,triggerfunc=function(a){}){
+var http = init()
+http.open(method,path);
+if(data){
+if(method=="POST"){
+http.send(data)
+}else{
+alert("send data in not POST request")
+http.send(null)
+}
+}else{
+http.send(null)
+}
+function process(){
+if(http.readyState==4){
+if(http.status!=200){
+alert("request error,status:" + http.status)
+}else{
+triggerfunc(http.responseText)
+}
+}
+}
+http.onreadystatechange=process;
+}
+request('GET','/api/write/delete/{{name}}')
+window.location.href = "/me"
+</script>
+</html>

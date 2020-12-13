@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+.table{
+width: 500px;
+height: 125px;
+margin: 20px auto;
+text-align: center;
+border-collapse: collapse;
+border: 2px solid black;
+}
+</style>
+<title>BLOG--ME</title>
+</head>
+<body>
+<table class="table" border="1" id="table">
+<tr>
+<td>logout</td>
+<td colspan="3"><input type="button" value="logout" onclick="logoutf()"/></td>
+</tr>
+<tr>
+<td>write</td>
+<td colspan="3"><input type="button" value="write" onclick="writef()"/></td>
+</tr>
+<tr>
+<th colspan="4">========================================================================</th>
+</tr>
+<tr>
+<td colspan="4">your blog list</td>
+</tr>
+<tr>
+<th>title</th>
+<th>link</th>
+<th>edit</th>
+<th>delete</th>
+</table>
+</body>
+<script>
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+function request(method,path,data,triggerfunc=function(a){}){
+var http = init()
+http.open(method,path);
+if(data){
+if(method=="POST"){
+http.send(data)
+}else{
+alert("send data in not POST request")
+http.send(null)
+}
+}else{
+http.send(null)
+}
+function process(){
+if(http.readyState==4){
+if(http.status!=200){
+alert("request error,status:" + http.status)
+}else{
+triggerfunc(http.responseText)
+}
+}
+}
+http.onreadystatechange=process;
+}
+var table = document.getElementById('table')
+function writef(){
+window.location.href = "/write"
+}
+function logoutf(){
+function trigger(resp){
+window.location.href = "/"
+}
+request("GET","/api/logout",null,trigger)
+}
+function addRow(title,link){
+var html = '<tr><td>' + title + '</td><td><a href="' + link + '">' + title + '</a></td><td><a href="/edit/' + title + '">edit</a></td><td><a href="/delPg/' + title + '">delete</a></td></tr>'
+table.innerHTML = table.innerHTML + html
+}
+function trigger(resp){
+var blogList = JSON.parse(resp)['blog']
+for(var i = 0;i < blogList.length;i = i + 1){
+addRow(blogList[i],'/blog/{{usr}}/' + blogList[i])
+}
+}
+request("GET","/api/blog",null,trigger)
+</script>
+</html>

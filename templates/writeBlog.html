@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BLOG--WRITING</title>
+</head>
+<body>
+<textarea rows="20" cols="50" id="text" onkeyup="return keydown()"></textarea>
+<br />
+$----------------------------------------$
+<div id="div"></div>
+<br />
+$----------------------------------------$
+<br />
+title:<input type="text" id="title" />
+<input type="button" value="issue" id="btn">
+</body>
+<script>
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+function request(method,path,data,triggerfunc=function(a){}){
+var http = init()
+if(!http){
+return
+}
+http.open(method,path);
+if(data){
+if(method=="POST"){
+http.setRequestHeader("Content-Type","application/json")
+http.send(data)
+}else{
+alert("send data in not POST request")
+http.send(null)
+}
+}else{
+http.send(null)
+}
+function process(){
+if(http.readyState==4){
+if(http.status!=200){
+alert("request error,status:" + http.status)
+}else{
+triggerfunc(http.responseText)
+}
+}
+}
+http.onreadystatechange=process;
+}
+var text = document.getElementById('text')
+var div = document.getElementById('div')
+var btn = document.getElementById('btn')
+function keydown(){
+div.innerHTML = text.value
+}
+btn.onclick = function(){
+function successful(){
+window.location.href="/me"
+}
+var title = document.getElementById('title').value
+request("POST","/api/write/" + title + "?method=write",JSON.stringify({content:text.value}),successful)
+}
+</script>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BLOG--HOME</title>
+</head>
+<body>
+<input type="text" placeholder="search..." id="searchT">
+<input type="button" value="search" id="searchB">
+<input type="button" value="me" id="me">
+{{usr}}
+<br />
+<div id="linkBox"></div>
+</body>
+<script>
+var searchT = document.getElementById("searchT")
+var searchB = document.getElementById("searchB")
+var me = document.getElementById("me")
+var linkBox = document.getElementById("linkBox")
+function addLink(tip,link){
+linkBox.innerHTML += '<br />'
+link = '<a href="' + link + '">' + tip + '</a>'
+linkBox.innerHTML += link
+}
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+searchB.onclick = function(){
+window.location.href = "/search?key=" + searchT.value
+}
+me.onclick = function(){
+window.location.href = "/me"
+}
+var http=init()
+http.open("GET","/api/search/{{kw}}")
+http.send(null)
+function process(){
+if(http.readyState == 4){
+if(http.status == 200){
+var result = eval(http.responseText)
+for(var i = 0;i < result.length;i = i + 1){
+addLink(result[i][0],result[i][1])
+}
+}else{
+alert("request error,status:" + http.status)
+}
+}
+}
+http.onreadystatechange = process
+</script>
+</html>

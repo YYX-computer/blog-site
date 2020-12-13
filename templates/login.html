@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="sha256.js"></script>
+<title>BLOG--LOGIN</title>
+</head>
+<body>
+username:<input type='text' id='usr'>
+<br />
+password:<input type='password' id='pwd'>
+<br />
+<input type='button' value='login' id='login'>
+<input type='button' value='register' id='reg'>
+<input type='button' value='delete' id='del'>
+</body>
+<script>
+var usr =  document.getElementById('usr')
+var pwd =  document.getElementById('pwd')
+var login = document.getElementById('login')
+var reg = document.getElementById('reg')
+var del = document.getElementById('del')
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+function request(method,path,data){
+var http = init()
+http.open(method,path);
+if(data){
+if(method=="POST"){
+http.send(data)
+}else{
+alert("send data in not POST request")
+http.send(null)
+}
+}else{
+http.send(null)
+}
+function process(){
+if(http.readyState==4){
+if(http.status!=200){
+alert("request error,status:" + http.status)
+}else{
+window.location.href = "/"
+}
+}
+}
+http.onreadystatechange=process;
+}
+login.onclick = function(){
+request("GET","/api/login/" + usr.value + "/" + sha256_digest(pwd.value))
+}
+reg.onclick = function(){
+window.location.href = "/register"
+}
+del.onclick = function(){
+request("GET","/api/delete/" + usr.value + "/" + pwd.value)
+}
+</script>
+</html>

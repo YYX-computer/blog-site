@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="sha256.js"></script>
+<title>BLOG--REGISTER</title>
+</head>
+<body>
+username:<input type="text" id="usr">
+<br />
+password:<input type="password" id="pwd">
+<br />
+verify:<input type="password" id="verify">
+<br />
+<input type="button" value="submit" id="submit">
+</body>
+<script>
+var usr = document.getElementById("usr")
+var pwd = document.getElementById("pwd")
+var verify = document.getElementById("verify")
+var submit = document.getElementById("submit")
+function init(){
+if(window.XMLHttpRequest){
+return new XMLHttpRequest()
+}else if(window.ActiveXObject){
+return new ActiveXObject("Microsoft.XMLHttp")
+}else{
+alert("`XMLHttpRequest` not available.")
+return undefined
+}
+}
+function request(method,path,success,data=null){
+var http = init()
+var succeeded = null;
+http.open(method,path)
+if(data){
+if(method=="POST"){
+http.send(data)
+}else{
+alert("send data in not POST request")
+http.send(null)
+}
+}else{
+http.send(null)
+}
+function process(){
+if(http.readyState==4){
+if(http.status!=200){
+alert("request error,status:" + http.status)
+}else{
+success()
+}
+}
+}
+http.onreadystatechange=process;
+while(succeeded=null){}
+return succeeded
+}
+submit.onclick = function(){
+if(pwd.value == verify.value){
+function success(){
+window.location.href="/login";
+}
+request("GET","/api/register/" + usr.value + "/" + sha256_digest(pwd.value),success)
+}
+}
+</script>
+</html>

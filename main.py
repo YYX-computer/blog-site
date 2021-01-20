@@ -97,7 +97,10 @@ def search_api(kw):
             if(kw in j):
                 blogList[(j,f'/blog/{i}/{j}')] = data[j] * cosSimular(kw,j)
     sortedBlogs = sorted(blogList.keys(),key = lambda x:blogList[x],reverse = True)
-    rint = random.randint(0,len(sortedBlogs) - 1)
+    try:
+        rint = random.randint(0,len(sortedBlogs) - 1)
+    except:
+        rint = 0
     return str([list(i) for i in sortedBlogs[rint:rint + 1]])
 @app.route('/api/home')
 def home_api():
